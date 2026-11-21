@@ -4,7 +4,7 @@ import Resume from './Resume'
 import {Res,Data,Entry,TPLS,tplOf,uid,newEntry,emptyData,defStyle,FONTS,SAMPLE,completion,toDocx} from './lib'
 const K='resumecraft.v1'
 const load=():Res[]=>{try{return JSON.parse(localStorage.getItem(K)||'[]')}catch{return[]}}
-const Thumb=({tpl,color}:{tpl:string;color?:string})=><div style={{width:'60mm',height:'85mm',overflow:'hidden'}}><div style={{zoom:.285}}><Resume d={SAMPLE} s={{...defStyle,color:color||'#1f2937'}} t={tplOf(tpl)}/></div></div>
+const Thumb=({tpl,color}:{tpl:string;color?:string})=><div style={{width:'60mm',height:'85mm',overflow:'hidden'}}><div style={{zoom:.285}}><Resume d={SAMPLE} s={{...defStyle,color:color||tplOf(tpl).accent}} t={tplOf(tpl)}/></div></div>
 const F=({l,children}:{l:string;children:any})=><label className="block mb-3 text-sm font-medium">{l}<div className="mt-1 font-normal">{children}</div></label>
 function Entries({list,set,L}:{list:Entry[];set:(l:Entry[])=>void;L:string[]}){
  const up=(i:number,p:Partial<Entry>)=>set(list.map((e,j)=>j===i?{...e,...p}:e))
@@ -25,7 +25,7 @@ function Editor({r,upd,back}:{r:Res;upd:(p:Partial<Res>)=>void;back:()=>void}){
  const photo=(f?:File)=>{if(!f)return;const fr=new FileReader();fr.onload=()=>sd({photo:fr.result as string});fr.readAsDataURL(f)}
  return <div className="flex flex-col h-screen"><div className="noprint flex flex-wrap items-center gap-2 p-3 border-b bg-white">
   <button className="btn" onClick={back}><ArrowLeft size={14}/></button><input style={{width:180}} value={r.name} onChange={e=>upd({name:e.target.value})}/>
-  <select style={{width:190}} value={r.tpl} onChange={e=>upd({tpl:e.target.value})}>{['Professional','Creative','ATS-Friendly','Specialized'].map(c=><optgroup key={c} label={c}>{TPLS.filter(t=>t.cat===c).map(t=><option key={t.id} value={t.id}>{t.name}</option>)}</optgroup>)}</select>
+  <select style={{width:190}} value={r.tpl} onChange={e=>upd({tpl:e.target.value,style:{...s,color:s.color===tplOf(r.tpl).accent?tplOf(e.target.value).accent:s.color}})}>{['Professional','Creative','ATS-Friendly','Specialized'].map(c=><optgroup key={c} label={c}>{TPLS.filter(t=>t.cat===c).map(t=><option key={t.id} value={t.id}>{t.name}</option>)}</optgroup>)}</select>
   <button className="btn md:hidden" onClick={()=>setPv(!pv)}><Eye size={14}/>{pv?'Edit':'Preview'}</button>
   <div className="ml-auto flex gap-2"><button className="btn dark" onClick={pdf}><Download size={14}/>PDF</button><button className="btn" onClick={()=>toDocx(r)}><FileText size={14}/>DOCX</button></div></div>
   <div className="flex flex-1 overflow-hidden"><div className={`noprint md:w-[420px] w-full overflow-auto p-4 ${pv?'hidden md:block':''}`}>
@@ -41,17 +41,17 @@ function Editor({r,upd,back}:{r:Res;upd:(p:Partial<Res>)=>void;back:()=>void}){
     <F l={`Section spacing: ${s.gap}px`}><input type="range" min={6} max={28} value={s.gap} onChange={e=>ss({gap:+e.target.value})}/></F>
     <F l={`Page margins: ${s.margin}mm`}><input type="range" min={8} max={26} value={s.margin} onChange={e=>ss({margin:+e.target.value})}/></F>
     <label className="flex gap-2 text-sm mb-3 items-center"><input type="checkbox" style={{width:16}} checked={s.photo} onChange={e=>ss({photo:e.target.checked})}/>Show profile photo</label>
-    <button className="btn" onClick={()=>upd({style:defStyle})}>Reset to default</button></>}
+    <button className="btn" onClick={()=>upd({style:{...defStyle,color:tplOf(r.tpl).accent}})}>Reset to default</button></>}
   </div>
   <div className={`flex-1 overflow-auto bg-neutral-200 p-4 ${pv?'':'hidden md:block'}`}><div className="sheet-wrap shadow-lg mx-auto" style={{zoom:Math.min(1,(innerWidth-(innerWidth>=768?480:32))/794),width:'210mm'}}><Resume d={d} s={s} t={tplOf(r.tpl)}/></div></div></div></div>}
 export default function App(){
  const [rs,setRs]=useState<Res[]>(load),[v,setV]=useState<{p:string;id?:string}>({p:'home'}),[cat,setCat]=useState('All')
  useEffect(()=>{localStorage.setItem(K,JSON.stringify(rs))},[rs])
- const create=(tpl:string)=>{const r:Res={id:uid(),name:'Untitled resume',tpl,updated:Date.now(),data:emptyData,style:defStyle};setRs([r,...rs]);setV({p:'edit',id:r.id})}
+ const create=(tpl:string)=>{const r:Res={id:uid(),name:'Untitled resume',tpl,updated:Date.now(),data:emptyData,style:{...defStyle,color:tplOf(tpl).accent}};setRs([r,...rs]);setV({p:'edit',id:r.id})}
  const cur=rs.find(r=>r.id===v.id)
  if(v.p==='edit'&&cur)return <Editor r={cur} back={()=>setV({p:'home'})} upd={p=>setRs(rs.map(r=>r.id===cur.id?{...r,...p,updated:Date.now()}:r))}/>
  const nav=(p:string,I:any,l:string)=><button className={'btn '+(v.p===p?'dark':'')} onClick={()=>setV({p})}><I size={16}/>{l}</button>
- return <div className="md:flex min-h-screen"><aside className="md:w-56 p-4 border-b md:border-r bg-white flex md:flex-col gap-2 flex-wrap"><div className="font-bold text-xl mb-2 w-full">ResumeCraft</div>{nav('home',LayoutDashboard,'My Resumes')}{nav('tpl',LayoutGrid,'Templates')}<button className="btn dark" onClick={()=>create('minimalist')}><Plus size={16}/>New resume</button></aside>
+ return <div className="md:flex min-h-screen"><aside className="md:w-56 p-4 border-b md:border-r bg-white flex md:flex-col gap-2 flex-wrap"><div className="font-bold text-xl mb-2 w-full">ResumeCraft</div>{nav('home',LayoutDashboard,'My Resumes')}{nav('tpl',LayoutGrid,'Templates')}<button className="btn dark" onClick={()=>setV({p:'tpl'})}><Plus size={16}/>New resume</button></aside>
  <main className="flex-1 p-5">{v.p==='tpl'?<><h1 className="text-2xl font-bold mb-3">Templates</h1><div className="flex gap-2 flex-wrap mb-4">{['All','Professional','Creative','ATS-Friendly','Specialized'].map(c=><button key={c} className={'btn '+(cat===c?'dark':'')} onClick={()=>setCat(c)}>{c}</button>)}</div>
   <div className="grid grid-cols-[repeat(auto-fill,minmax(230px,1fr))] gap-4">{TPLS.filter(t=>cat==='All'||t.cat===cat).map(t=><div key={t.id} className="bg-white border rounded-xl p-3"><div className="mx-auto border" style={{width:'60mm'}}><Thumb tpl={t.id}/></div><div className="font-semibold mt-2">{t.name}</div><div className="text-xs text-neutral-500 mb-2">{t.cat}</div><button className="btn dark" onClick={()=>create(t.id)}>Use template</button></div>)}</div></>
  :<><h1 className="text-2xl font-bold mb-4">My Resumes</h1>{rs.length===0?<div className="border-2 border-dashed rounded-2xl p-10 text-center bg-white"><FileText className="mx-auto mb-3" size={40}/><p className="mb-4">No resumes yet. Create your first one.</p><button className="btn dark" onClick={()=>setV({p:'tpl'})}>Browse templates</button></div>
