@@ -1,0 +1,6 @@
+@import "tailwindcss";
+body{font-family:Inter,system-ui,sans-serif;background:#fafafa;color:#111}
+input,textarea,select{border:1px solid #d4d4d4;border-radius:8px;padding:8px 10px;width:100%;background:#fff;font-size:14px}
+.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid #111;border-radius:8px;padding:8px 12px;font-size:14px;font-weight:600;background:#fff;cursor:pointer}
+.btn.dark{background:#111;color:#fff}
+@media print{@page{size:A4;margin:0}body{background:#fff}.noprint{display:none!important}.sheet-wrap{zoom:1!important;margin:0!important;box-shadow:none!important}}
