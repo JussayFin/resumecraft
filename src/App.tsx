@@ -35,7 +35,7 @@ function Editor({r,upd,back}:{r:Res;upd:(p:Partial<Res>)=>void;back:()=>void}){
    {tab==='Education'&&<Entries list={d.edu} set={l=>sd({edu:l})} L={['Degree / course & field','School / university','Start date','Graduation date','Achievements (one per line)']}/>}
    {tab==='Skills'&&<>{T('skills','Hard / technical skills (one per line or comma)',true)}{T('software','Software proficiency',true)}{T('soft','Soft skills',true)}{T('languages','Languages',true)}</>}
    {tab==='More'&&<><div className="font-semibold mb-2">Certifications & training</div><Entries list={d.cert} set={l=>sd({cert:l})} L={['Certification','Issuing organization','Date obtained','Expires (optional)','Notes']}/>{T('projects','Projects (one per line)',true,4)}{T('awards','Awards (one per line)',true)}{T('refs','References (optional)',true)}</>}
-   {tab==='Design'&&<><F l="Primary color"><input type="color" style={{height:40}} value={s.color} onChange={e=>ss({color:e.target.value})}/></F>
+   {tab==='Design'&&<><F l="Accent color"><input type="color" style={{height:40}} value={s.hi||tplOf(r.tpl).hi} onChange={e=>ss({hi:e.target.value})}/></F><F l="Main color"><input type="color" style={{height:40}} value={s.color} onChange={e=>ss({color:e.target.value})}/></F>
     <F l="Font"><select value={s.font} onChange={e=>ss({font:e.target.value})}><option value="">Template default</option>{FONTS.map(f=><option key={f}>{f}</option>)}</select></F>
     <F l={`Font size: ${s.size}px`}><input type="range" min={10} max={16} value={s.size} onChange={e=>ss({size:+e.target.value})}/></F>
     <F l={`Section spacing: ${s.gap}px`}><input type="range" min={6} max={28} value={s.gap} onChange={e=>ss({gap:+e.target.value})}/></F>
