@@ -8,8 +8,10 @@ export const uid=()=>Math.random().toString(36).slice(2,9)
 export const newEntry=():Entry=>({id:uid(),title:'',org:'',place:'',start:'',end:'',current:false,text:''})
 export const emptyData:Data={name:'',title:'',email:'',phone:'',city:'',link:'',summary:'',photo:'',exp:[],edu:[],cert:[],skills:'',software:'',soft:'',languages:'',projects:'',awards:'',refs:''}
 export const defStyle:Style={color:'#111111',font:'',size:13,gap:14,margin:16,photo:true}
-export const FONTS=['Arial','Georgia','Times New Roman','Verdana','Trebuchet MS','Tahoma','Courier New']
-const T=(s:string):Tpl=>{const [id,name,cat,layout,head,font,dark,accent,ent,chip,nm,deco]=s.split('|');return {id,name,cat,layout,head,font,dark:!!dark,accent,ent,chip,nm,deco} as Tpl}
+export const FONTS=['Inter','DM Sans','Poppins','Montserrat','Manrope','Space Grotesk','Lora','Playfair Display','JetBrains Mono','Arial']
+const FM:Record<string,string>={minimalist:'Inter','modern-pro':'DM Sans',corporate:'Manrope',executive:'Lora',traditional:'Lora',elegant:'Playfair Display',designer:'Poppins',sidebar:'DM Sans',contemporary:'Space Grotesk',bold:'Montserrat',portfolio:'Playfair Display','simple-ats':'Inter','pro-ats':'DM Sans',compact:'Inter','trad-ats':'Lora','modern-ats':'Manrope',fresh:'Poppins',finance:'Lora',admin:'DM Sans',it:'JetBrains Mono',engineering:'Space Grotesk',european:'Inter',academic:'Lora',experienced:'Montserrat',photo:'Poppins'}
+const dx=(f:string)=>/Lora|Playfair|Georgia/.test(f)?'Georgia':/Mono|Courier/.test(f)?'Courier New':f==='Arial'?f:'Calibri'
+const T=(s:string):Tpl=>{const [id,name,cat,layout,head,font,dark,accent,ent,chip,nm,deco]=s.split('|');return {id,name,cat,layout,head,font:FM[id]||font,dark:!!dark,accent,ent,chip,nm,deco} as Tpl}
 export const TPLS:Tpl[]=[
 'minimalist|Minimalist|Professional|single|under|Arial||#111111|r|t|l|n','modern-pro|Modern Professional|Professional|left|pill|Arial||#1e3a5f|r|c|b|n','corporate|Corporate|Professional|band|bar|Arial||#14315c|r|t|b|n','executive|Executive|Professional|center|caps|Georgia||#3b2f2f|r|t|c|f','traditional|Traditional|Professional|single|line|Times New Roman||#000000|r|t|b|n','elegant|Elegant|Professional|center|dot|Georgia||#7f1d1d|l|t|c|n',
 'designer|Creative Designer|Creative|left|box|Trebuchet MS|1|#e11d48|d|c|b|n','sidebar|Modern Sidebar|Creative|right|pill|Verdana||#0f766e|d|c|b|n','contemporary|Contemporary|Creative|split|line|Trebuchet MS||#4338ca|r|c|b|n','bold|Bold Typography|Creative|band|caps|Arial||#111111|l|t|b|n','portfolio|Portfolio Style|Creative|split|box|Georgia||#7c3aed|d|c|b|s',
@@ -25,7 +27,7 @@ exp:[E('Inventory Intern','Sample Construction Corp','Davao City','2025','2026',
 edu:[E('BS Business Administration','Sample College','Nabunturan','2022','2026','Major in Financial Management')],cert:[E('Bookkeeping Training','TESDA','','2025','','')],awards:'Dean\'s Lister'}
 export const completion=(d:Data)=>Math.round([d.name,d.title,d.email,d.phone,d.summary,d.exp.length,d.edu.length,d.skills||d.software].filter(Boolean).length/8*100)
 export async function toDocx(r:Res){
- const d=r.data,s=r.style,t=tplOf(r.tpl),c=s.color.replace('#',''),font=s.font||t.font,sz=Math.round(s.size*1.5),m=Math.round(s.margin*56.7),w=Math.round((210-2*s.margin)*56.7)
+ const d=r.data,s=r.style,t=tplOf(r.tpl),c=s.color.replace('#',''),font=dx(s.font||t.font),sz=Math.round(s.size*1.5),m=Math.round(s.margin*56.7),w=Math.round((210-2*s.margin)*56.7)
  const run=(text:string,o:any={})=>new TextRun({text,font,size:sz,...o})
  const ctr=t.layout==='center'||t.layout==='band'?AlignmentType.CENTER:AlignmentType.LEFT
  const out:Paragraph[]=[]
